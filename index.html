@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szamma Mia - Restauracja</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #009246;
+            --white: #ffffff;
+            --red: #ce2b37;
+            --dark: #1a1a1a;
+            --light-gray: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+        .logo span {
+            color: var(--red);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .btn-order {
+            background: var(--red);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-order:hover {
+            background: #b02530;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                        url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .flag-accent {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .flag-accent div {
+            width: 40px;
+            height: 6px;
+        }
+
+        .flag-green { background: var(--green); }
+        .flag-white { background: var(--white); }
+        .flag-red { background: var(--red); }
+
+        /* Section Styles */
+        section {
+            padding: 4rem 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        /* Menu Gallery */
+        .menu {
+            background: var(--light-gray);
+        }
+
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dish-card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+            cursor: pointer;
+        }
+
+        .dish-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .dish-info {
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dish-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .dish-price {
+            color: var(--green);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            background: var(--green);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .btn-add-cart:hover {
+            background: #007a3a;
+        }
+
+        /* Location Section */
+        .location {
+            background: var(--white);
+        }
+
+        .map-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        .address {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer .flag-accent {
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .dishes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="#home" style="text-decoration: none; color:var(--green)">Szamma <span>Mia</span></a></div>
+        <ul class="nav-links">
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#location">Dojazd</a></li>
+            <li><button class="btn-order">Zamów Teraz</button></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="flag-accent">
+            <div class="flag-green"></div>
+            <div class="flag-white"></div>
+            <div class="flag-red"></div>
+        </div>
+        <h1>Szamma Mia</h1>
+        <p>Autentyczna Włoska kuchnia w sercu miasta</p>
+        <button class="btn-order">Zamów Online</button>
+    </section>
+
+    <section id="menu" class="menu">
+        <h2 class="section-title">Nasze Menu</h2>
+        <p class="section-subtitle">Świeże składniki, tradycyjne włoskie dania</p>
+        <div class="dishes-grid">
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600" alt="Margherita Pizza">
+                <div class="dish-info">
+                    <span class="dish-name">Pizza Margherita</span>
+                    <span class="dish-price">PLN 35</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600" alt="Spaghetti Carbonara">
+                <div class="dish-info">
+                    <span class="dish-name">Spaghetti Carbonara</span>
+                    <span class="dish-price">PLN 40</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=600" alt="Lasagna">
+                <div class="dish-info">
+                    <span class="dish-name">Lasagna Bolognese</span>
+                    <span class="dish-price">PLN 42</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600" alt="Pepperoni Pizza">
+                <div class="dish-info">
+                    <span class="dish-name">Pizza Pepperoni</span>
+                    <span class="dish-price">PLN 38</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=600" alt="Risotto">
+                <div class="dish-info">
+                    <span class="dish-name">Risotto Grzybowe</span>
+                    <span class="dish-price">PLN 50</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600" alt="Tiramisu">
+                <div class="dish-info">
+                    <span class="dish-name">Tiramisu</span>
+                    <span class="dish-price">PLN 24</span>
+                </div>
+                <button class="btn-add-cart">Dodaj do koszyka</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="location" class="location">
+        <h2 class="section-title">Znajdź Nas</h2>
+        <p class="section-subtitle">Odwiedź nas dla niezapomnianych doznań kulinarnych</p>
+        <div class="map-container">
+            Piaseczno, Polska - Fontanna miejska, centrum
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2452.292310123521!2d21.025537176245173!3d52.07440847194769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47192f508ccda599%3A0x6098b28055e3d738!2sSzamma%20mia!5e0!3m2!1sen!2spl!4v1769946708832!5m2!1sen!2spl"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                style="border:0;"  
+                >
+                </iframe>
+<!--         iframe attributes 
+                width="600"
+                height="450" -->
+
+        </div>
+        <p class="address">Sierakowskiego 2, 05-500 Piaseczno, Polska</p>
+    </section>
+
+    <footer>
+        <div class="flag-accent">
+            <div class="flag-green"></div>
+            <div class="flag-white"></div>
+            <div class="flag-red"></div>
+        </div>
+        <p>&copy; 2026 Szamma Mia. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>

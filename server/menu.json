@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "name": "Margherita Pizza",
+        "description": "Classic pizza with tomato, mozzarella, and basil.",
+        "price": 15.99,
+        "image": "images/margherita.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Pasta Carbonara",
+        "description": "Spaghetti with eggs, cheese, pancetta, and black pepper.",
+        "price": 18.50,
+        "image": "images/carbonara.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Lasagna",
+        "description": "Layers of pasta with meat sauce, béchamel, and cheese.",
+        "price": 20.00,
+        "image": "images/lasagna.jpg"
+    }
+]
