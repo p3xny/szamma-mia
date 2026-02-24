@@ -14,7 +14,7 @@ onMounted(() => {
         observer.disconnect()
       }
     },
-    { threshold: 0.1, rootMargin: '0px 0px -42% 0px' }
+    { threshold: 0.1, rootMargin: '0px 0px -32% 0px' }
   )
   if (sectionRef.value) observer.observe(sectionRef.value)
 })

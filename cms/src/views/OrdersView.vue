@@ -86,6 +86,34 @@ function formatDate(iso) {
   return `${d}.${m}.${y}`
 }
 
+// ── Phone helpers ──────────────────────────────────────────────────────────
+const DIAL_FLAGS = {
+  '+358': '🇫🇮', '+420': '🇨🇿', '+421': '🇸🇰', '+380': '🇺🇦', '+375': '🇧🇾',
+  '+48': '🇵🇱', '+49': '🇩🇪', '+44': '🇬🇧', '+33': '🇫🇷', '+39': '🇮🇹',
+  '+34': '🇪🇸', '+31': '🇳🇱', '+32': '🇧🇪', '+43': '🇦🇹', '+41': '🇨🇭',
+  '+46': '🇸🇪', '+47': '🇳🇴', '+45': '🇩🇰', '+7': '🇷🇺', '+1': '🇺🇸',
+}
+
+function formatPhone(raw) {
+  if (!raw) return '—'
+  if (raw.startsWith('+')) return raw
+  // Legacy entry without dial code — default to Polish +48
+  const digits = raw.replace(/\D/g, '')
+  return digits ? `+48 ${digits}` : raw
+}
+
+function phoneFlag(raw) {
+  const normalized = formatPhone(raw)
+  const dial = Object.keys(DIAL_FLAGS)
+    .sort((a, b) => b.length - a.length)
+    .find(d => normalized.startsWith(d))
+  return dial ? DIAL_FLAGS[dial] : ''
+}
+
+function phoneHref(raw) {
+  return 'tel:' + formatPhone(raw).replace(/\s/g, '')
+}
+
 const statusLabels = {
   pending: 'Oczekujące',
   confirmed: 'Potwierdzone',
@@ -266,7 +294,11 @@ onMounted(fetchData)
                       </div>
                       <div>
                         <strong>Kontakt:</strong>
-                        <div>{{ o.phone }}<span v-if="o.email"> · {{ o.email }}</span></div>
+                        <div>
+                          <span class="phone-flag">{{ phoneFlag(o.phone) }}</span>
+                          <a :href="phoneHref(o.phone)" class="phone-link">{{ formatPhone(o.phone) }}</a>
+                          <span v-if="o.email"> · {{ o.email }}</span>
+                        </div>
                       </div>
                       <div v-if="o.scheduled_time">
                         <strong>Na godzinę:</strong>
@@ -536,5 +568,20 @@ onMounted(fetchData)
 .eta-fade-enter-from,
 .eta-fade-leave-to {
   opacity: 0;
+}
+
+.phone-flag {
+  margin-right: 4px;
+}
+
+.phone-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.phone-link:hover {
+  text-decoration: underline;
+  color: var(--primary, #2563eb);
 }
 </style>

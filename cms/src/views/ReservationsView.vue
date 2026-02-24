@@ -83,6 +83,34 @@ function formatDate(iso) {
   return `${d}.${m}.${y}`
 }
 
+// ── Phone helpers ──────────────────────────────────────────────────────────
+const DIAL_FLAGS = {
+  '+358': '🇫🇮', '+420': '🇨🇿', '+421': '🇸🇰', '+380': '🇺🇦', '+375': '🇧🇾',
+  '+48': '🇵🇱', '+49': '🇩🇪', '+44': '🇬🇧', '+33': '🇫🇷', '+39': '🇮🇹',
+  '+34': '🇪🇸', '+31': '🇳🇱', '+32': '🇧🇪', '+43': '🇦🇹', '+41': '🇨🇭',
+  '+46': '🇸🇪', '+47': '🇳🇴', '+45': '🇩🇰', '+7': '🇷🇺', '+1': '🇺🇸',
+}
+
+function formatPhone(raw) {
+  if (!raw) return '—'
+  if (raw.startsWith('+')) return raw
+  // Legacy entry without dial code — default to Polish +48
+  const digits = raw.replace(/\D/g, '')
+  return digits ? `+48 ${digits}` : raw
+}
+
+function phoneFlag(raw) {
+  const normalized = formatPhone(raw)
+  const dial = Object.keys(DIAL_FLAGS)
+    .sort((a, b) => b.length - a.length)
+    .find(d => normalized.startsWith(d))
+  return dial ? DIAL_FLAGS[dial] : ''
+}
+
+function phoneHref(raw) {
+  return 'tel:' + formatPhone(raw).replace(/\s/g, '')
+}
+
 onMounted(fetchData)
 </script>
 
@@ -144,7 +172,10 @@ onMounted(fetchData)
             <td>{{ r.start_time }}</td>
             <td><strong>{{ r.table_label }}</strong></td>
             <td>{{ r.guest_name }}</td>
-            <td>{{ r.guest_phone }}</td>
+            <td class="phone-cell">
+              <span class="phone-flag">{{ phoneFlag(r.guest_phone) }}</span>
+              <a :href="phoneHref(r.guest_phone)" class="phone-link">{{ formatPhone(r.guest_phone) }}</a>
+            </td>
             <td>{{ r.guests_count }}</td>
             <td>
               <span class="badge" :class="r.status === 'confirmed' ? 'badge-green' : 'badge-red'">
@@ -182,3 +213,24 @@ onMounted(fetchData)
     />
   </div>
 </template>
+
+<style scoped>
+.phone-cell {
+  white-space: nowrap;
+}
+
+.phone-flag {
+  margin-right: 4px;
+}
+
+.phone-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.phone-link:hover {
+  text-decoration: underline;
+  color: var(--primary, #2563eb);
+}
+</style>

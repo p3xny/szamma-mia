@@ -8,7 +8,14 @@ import { useOrderNotifications } from '@/composables/useOrderNotifications'
 import { usePushNotifications } from '@/composables/usePushNotifications'
 
 const route = useRoute()
-const hideNav = computed(() => ['/cart-summary', '/order-summary'].includes(route.path))
+const hideNav = computed(() =>
+  ['/cart-summary', '/order-summary', /\/order-confirmation\/\d+/]
+    .some(pattern =>
+      typeof pattern === 'string'
+        ? pattern === route.path
+        : pattern.test(route.path)
+    )
+)
 
 const cartOpen = ref(false)
 const { fetchUser, isAuthenticated, isAdmin } = useAuth()

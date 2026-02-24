@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useCart } from '@/composables/useCart'
 import { useAuth } from '@/composables/useAuth'
 import { createOrder, validateCoupon, getSlotOccupancy } from '@/composables/useApi'
+import PhoneInput from '@/components/PhoneInput.vue'
 
 const router = useRouter()
 const { items, totalPrice, calcItemTotal, clearCart } = useCart()
@@ -364,7 +365,7 @@ if (items.value.length === 0) {
 
             <div class="dv-field">
               <label class="dv-label">Telefon<span class="req">*</span></label>
-              <input v-model="phone" type="tel" class="dv-input">
+              <PhoneInput v-model="phone" :required="true" />
             </div>
 
             <div class="dv-field">
@@ -388,7 +389,7 @@ if (items.value.length === 0) {
 
             <div class="dv-field">
               <label class="dv-label">Telefon<span class="req">*</span></label>
-              <input v-model="phone" type="tel" class="dv-input">
+              <PhoneInput v-model="phone" :required="true" />
             </div>
           </div>
 

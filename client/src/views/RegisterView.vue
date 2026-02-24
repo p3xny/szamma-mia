@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import PhoneInput from '@/components/PhoneInput.vue'
 
 const router = useRouter()
 const { register, isAuthenticated } = useAuth()
@@ -66,7 +67,7 @@ async function handleRegister() {
 
         <div class="auth-field">
           <label>Telefon</label>
-          <input v-model="phone" type="tel" required>
+          <PhoneInput v-model="phone" :required="true" />
         </div>
 
         <div class="auth-field">

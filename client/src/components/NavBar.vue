@@ -86,7 +86,7 @@ watch(() => route.path, () => {
 </script>
 
 <template>
-  <nav>
+  <nav :class="{ 'nav-menu-open': mobileMenuOpen }">
     <div class="logo">
       <!-- <a href="/" @click.prevent="goHome">Szamma <span>Mia</span></a> -->
       <img src="/src/assets/szamma-mia-logo.png" alt="Szamma Mia Logo" class="logo-img" @click.prevent="goHome" />
@@ -200,6 +200,9 @@ nav {
   padding: 1rem 5%;
 
   font-family: 'Nocturne', serif;
+}
+.nav-mobile {
+  background: rgb(255,255,255);
 }
 
 .logo {
@@ -519,6 +522,11 @@ nav {
 }
 
 @media (max-width: 768px) {
+  nav.nav-menu-open {
+    box-shadow: none;
+    background: #fff;
+  }
+
   .nav-links {
     display: none;
   }

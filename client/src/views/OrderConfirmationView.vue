@@ -162,7 +162,7 @@ onUnmounted(stopPolling)
   background: var(--white);
   display: flex;
   flex-direction: column;
-  padding-top: 60px;
+  /* padding-top: 60px; */
 }
 
 .confirm-header {
