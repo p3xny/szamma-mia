@@ -4,6 +4,11 @@ body {
   width: 100%;
 }
 
+/* Account for fixed navbar (~72px) when browser scrolls to hash anchors via scrollIntoView */
+section[id] {
+  scroll-margin-top: 76px;
+}
+
 html {
   scroll-behavior: smooth;
 }

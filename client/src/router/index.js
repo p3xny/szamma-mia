@@ -48,7 +48,18 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition
     if (to.hash) {
-      return { el: to.hash, behavior: 'smooth' }
+      // Cross-route: page has just rendered but images may not have loaded yet,
+      // causing layout shifts that would put the scroll position at the wrong spot.
+      // Wait for the layout to stabilize before scrolling.
+      if (from.name && from.path !== to.path) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve({ el: to.hash, top: +32, behavior: 'smooth' })
+          }, 400)
+        })
+      }
+      // Same-route hash push (rare, NavBar handles this via scrollIntoView directly)
+      return { el: to.hash, top: +32, behavior: 'smooth' }
     }
     return { top: 0 }
   },

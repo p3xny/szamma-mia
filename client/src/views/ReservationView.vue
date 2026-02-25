@@ -195,6 +195,17 @@ onMounted(async () => {
         </p>
       </div>
 
+      <!-- Private events callout -->
+      <div class="res-events-callout">
+        <div class="res-events-callout-icon">🎉</div>
+        <div class="res-events-callout-text">
+          <strong>Organizujesz urodziny, spotkanie firmowe lub inne wydarzenie?</strong>
+          <span>Zarezerwuj salę dla swojej grupy — skontaktuj się z nami telefonicznie:
+            <a :href="phoneHref" class="res-phone-link">{{ phoneNumber }}</a>
+          </span>
+        </div>
+      </div>
+
       <div v-if="userHasReservation" class="res-existing">
         <div class="res-existing-header">Twoja rezerwacja na ten dzien</div>
         <div v-if="userReservation" class="res-existing-details">
@@ -778,6 +789,40 @@ onMounted(async () => {
   opacity: 0;
 }
 
+/* Private events callout */
+.res-events-callout {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  background: #fffbf0;
+  border: 1px solid #f0dfa0;
+  border-left: 4px solid #d4a017;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.res-events-callout-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.res-events-callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.res-events-callout-text strong {
+  color: #333;
+  font-weight: 700;
+}
+
 @media (max-width: 600px) {
   .res-hero h1 { font-size: 1.5rem; }
   .res-map { height: 260px; }
@@ -788,5 +833,10 @@ onMounted(async () => {
   .map-table-label { font-size: 0.85rem; }
   .map-table-seats { font-size: 0.65rem; }
   .time-slot { padding: 0.35rem 0.55rem; font-size: 0.8rem; }
+
+  .res-events-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

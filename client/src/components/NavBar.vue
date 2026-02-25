@@ -95,6 +95,7 @@ watch(() => route.path, () => {
       <li><a href="#about" @click.prevent="navigateHash('#about')">O nas</a></li>
       <li><a href="#menu" @click.prevent="navigateHash('#menu')">Menu</a></li>
       <li><router-link to="/reservation" @click="closeMobileMenu">Rezerwacja</router-link></li>
+      <li><a href="#events" @click.prevent="navigateHash('#events')">Eventy</a></li>
       <li><a href="#location" @click.prevent="navigateHash('#location')">Dojazd</a></li>
       <li><a href="#contact" @click.prevent="navigateHash('#contact')">Kontakt</a></li>
       <li v-if="!isAuthenticated">
@@ -147,6 +148,7 @@ watch(() => route.path, () => {
       <a href="#about" class="mobile-menu-link" @click.prevent="navigateHash('#about')">O nas</a>
       <a href="#menu" class="mobile-menu-link" @click.prevent="navigateHash('#menu')">Menu</a>
       <router-link to="/reservation" class="mobile-menu-link" @click="closeMobileMenu">Rezerwacja</router-link>
+      <li><a href="#events" class="mobile-menu-link" @click.prevent="navigateHash('#events')">Eventy</a></li>
       <a href="#location" class="mobile-menu-link" @click.prevent="navigateHash('#location')">Dojazd</a>
       <a href="#contact" class="mobile-menu-link" @click.prevent="navigateHash('#contact')">Kontakt</a>
       <template v-if="!isAuthenticated">
