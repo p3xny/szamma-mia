@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCart } from '@/composables/useCart'
 import { useAuth } from '@/composables/useAuth'
-import { createOrder, validateCoupon, getSlotOccupancy } from '@/composables/useApi'
+import { createOrder, validateCoupon, getSlotOccupancy, initiateAutopay } from '@/composables/useApi'
 import PhoneInput from '@/components/PhoneInput.vue'
 
 const router = useRouter()
@@ -227,14 +227,33 @@ async function submitOrder() {
     })),
   }
 
+  const ONLINE_METHODS = ['blik', 'card-online', 'transfer']
+
   try {
     const order = await createOrder(orderData)
     clearCart()
-    router.push('/order-confirmation/' + order.id)
+
+    if (ONLINE_METHODS.includes(paymentMethod.value)) {
+      // Redirect to AutoPay gateway via a dynamically-submitted hidden form
+      const { gateway_url, params } = await initiateAutopay(order.id)
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = gateway_url
+      for (const [key, value] of Object.entries(params)) {
+        const input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = value
+        form.appendChild(input)
+      }
+      document.body.appendChild(form)
+      form.submit()
+    } else {
+      router.push('/order-confirmation/' + order.id)
+    }
   } catch (err) {
-    submitError.value = err.response?.data?.detail || 'Nie udało się złożyć zamówienia'
-  } finally {
     submitting.value = false
+    submitError.value = err.response?.data?.detail || 'Nie udało się złożyć zamówienia'
   }
 }
 

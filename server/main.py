@@ -3,12 +3,23 @@ from contextlib import asynccontextmanager
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 
-from fastapi import BackgroundTasks, FastAPI, Depends, HTTPException
+from base64 import b64decode
+
+from fastapi import BackgroundTasks, FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from autopay import (
+    AUTOPAY_GATEWAY_URL,
+    ONLINE_PAYMENT_METHODS,
+    build_confirmation_xml,
+    build_payment_params,
+    parse_itn,
+    verify_itn_hash,
+    verify_return_hash,
+)
 from auth import (
     create_access_token,
     get_current_user,
@@ -889,6 +900,84 @@ async def push_unsubscribe(
     if sub:
         await db.delete(sub)
         await db.commit()
+
+
+# --- AutoPay payment endpoints ---
+
+
+@app.post("/api/payments/autopay/initiate/{order_id}")
+async def autopay_initiate(order_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Return the gateway URL and POST parameters the frontend needs to redirect
+    the customer to AutoPay for payment.
+
+    The frontend should create a hidden HTML form, populate it with `params`,
+    and submit it to `gateway_url`.
+    """
+    order = await db.get(Order, order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Zamówienie nie istnieje")
+    if order.payment_method not in ONLINE_PAYMENT_METHODS:
+        raise HTTPException(status_code=400, detail="To zamówienie nie wymaga płatności online")
+    if order.status != "pending":
+        raise HTTPException(status_code=400, detail="Zamówienie jest już przetworzone")
+
+    amount = f"{order.total:.2f}"
+    params = build_payment_params(order_id=order.id, amount=amount)
+
+    return {"gateway_url": AUTOPAY_GATEWAY_URL, "params": params}
+
+
+@app.post("/api/payments/autopay/itn")
+async def autopay_itn(request: Request, db: AsyncSession = Depends(get_db)):
+    """
+    ITN (Instant Transaction Notification) webhook called by AutoPay to confirm
+    payment status. Expects a form-encoded body with a `transactions` field
+    containing a Base64-encoded XML document.
+
+    Responds with an XML confirmation (CONFIRMED / NOTCONFIRMED) as required
+    by AutoPay. Must return HTTP 200 — otherwise AutoPay will retry.
+    """
+    form = await request.form()
+    raw_b64 = form.get("transactions")
+
+    if not raw_b64:
+        xml_err = build_confirmation_xml("", "", False)
+        return Response(content=xml_err, media_type="application/xml")
+
+    try:
+        raw_xml = b64decode(raw_b64).decode("utf-8")
+        tx = parse_itn(raw_xml)
+    except Exception:
+        xml_err = build_confirmation_xml("", "", False)
+        return Response(content=xml_err, media_type="application/xml")
+
+    service_id = tx["service_id"]
+    order_id_str = tx["order_id"]
+    confirmed = False
+
+    if verify_itn_hash(tx):
+        if tx["payment_status"] == "SUCCESS":
+            try:
+                order = await db.get(Order, int(order_id_str))
+                if order and order.status == "pending":
+                    order.status = "confirmed"
+                    await db.commit()
+                confirmed = True
+            except Exception:
+                pass
+        elif tx["payment_status"] == "FAILURE":
+            try:
+                order = await db.get(Order, int(order_id_str))
+                if order and order.status == "pending":
+                    order.status = "cancelled"
+                    await db.commit()
+            except Exception:
+                pass
+            confirmed = True  # hash was valid, we just won't fulfill the order
+
+    xml_response = build_confirmation_xml(service_id, order_id_str, confirmed)
+    return Response(content=xml_response, media_type="application/xml")
 
 
 @app.get("/")

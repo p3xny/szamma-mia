@@ -23,3 +23,8 @@ export async function getSlotOccupancy(dateStr) {
   const res = await api.get('/order-slots', { params: { date_str: dateStr } })
   return res.data
 }
+
+export async function initiateAutopay(orderId) {
+  const res = await api.post(`/payments/autopay/initiate/${orderId}`)
+  return res.data
+}

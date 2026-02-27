@@ -42,6 +42,17 @@ function todayStr() {
   return d.toISOString().slice(0, 10)
 }
 
+function tomorrowStr() {
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  return d.toISOString().slice(0, 10)
+}
+
+const dateOptions = computed(() => [
+  { value: todayStr(), label: 'Dzisiaj' },
+  { value: tomorrowStr(), label: 'Jutro' },
+])
+
 const timeSlots = computed(() => {
   const slots = []
   for (let h = 12; h <= 22; h++) {
@@ -49,6 +60,18 @@ const timeSlots = computed(() => {
     if (h < 22) slots.push(`${String(h).padStart(2, '0')}:30`)
   }
   return slots
+})
+
+const availableTimeSlots = computed(() => {
+  if (selectedDate.value !== todayStr()) return timeSlots.value
+  const now = new Date()
+  const minTime = new Date(now.getTime() + 60 * 60 * 1000)
+  const minH = minTime.getHours()
+  const minM = minTime.getMinutes()
+  return timeSlots.value.filter(slot => {
+    const [h, m] = slot.split(':').map(Number)
+    return h > minH || (h === minH && m >= minM)
+  })
 })
 
 const indoorTables = computed(() => tables.value.filter(t => t.zone === 'indoor'))
@@ -168,13 +191,26 @@ onMounted(async () => {
       <div class="res-controls">
         <div class="res-control-group">
           <label>Data</label>
-          <input type="date" v-model="selectedDate" :min="todayStr()" class="res-input" />
+          <div class="time-slots">
+            <button
+              v-for="opt in dateOptions"
+              :key="opt.value"
+              class="time-slot"
+              :class="{ active: selectedDate === opt.value }"
+              @click="selectedDate = opt.value"
+            >
+              {{ opt.label }}
+            </button>
+          </div>
         </div>
         <div class="res-control-group">
           <label>Godzina</label>
-          <div class="time-slots">
+          <div v-if="availableTimeSlots.length === 0" class="res-no-slots">
+            Brak dostępnych godzin na dziś — wybierz jutro.
+          </div>
+          <div v-else class="time-slots">
             <button
-              v-for="slot in timeSlots"
+              v-for="slot in availableTimeSlots"
               :key="slot"
               class="time-slot"
               :class="{ active: selectedTime === slot }"
@@ -430,6 +466,13 @@ onMounted(async () => {
   padding: 3rem 1rem;
   color: #999;
   font-size: 1rem;
+}
+
+.res-no-slots {
+  font-size: 0.9rem;
+  color: #999;
+  font-style: italic;
+  padding: 0.4rem 0;
 }
 
 /* Alerts */
